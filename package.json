@@ -1,0 +1,25 @@
+{
+  "name": "adk-stoquei",
+  "version": "1.0.0",
+  "main": "src/agents/agent.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "adk": "node --env-file=.env node_modules/.bin/adk web ./src/agents/agent.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "@google/adk": "^0.6.1",
+    "axios": "^1.15.1",
+    "dotenv": "^17.4.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@google/adk-devtools": "^0.6.1",
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3"
+  }
+}
