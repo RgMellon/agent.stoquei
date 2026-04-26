@@ -1,4 +1,4 @@
-import { httpClient } from "./httpClient.js";
+import { httpClient } from "../httpClient.js";
 
 interface SalesHistoryParams {
   storeId: string;

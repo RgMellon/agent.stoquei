@@ -1,5 +1,6 @@
 import { FunctionTool, Context } from "@google/adk";
 import { fetchMe } from "../client/userClient.js";
+import { CONTEXT_KEY } from "../constants/contextKeys.js";
 
 export const getMeTool = new FunctionTool({
   name: "get_me",
@@ -10,8 +11,8 @@ export const getMeTool = new FunctionTool({
       const data = await fetchMe();
       console.log({ data }, "----");
       if (tool_context) {
-        tool_context.state.set("user:me", data);
-        tool_context.state.set("user:storeId", data.stores?.[0]?.id);
+        tool_context.state.set(CONTEXT_KEY.USER_ME, data);
+        tool_context.state.set(CONTEXT_KEY.USER_STORE_ID, data.stores?.[0]?.id);
       }
 
       return JSON.stringify(data);
