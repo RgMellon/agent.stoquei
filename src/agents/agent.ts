@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { LlmAgent } from "@google/adk";
 import { salesAgent } from "./sales.js";
+import { stockAgent } from "./stock.js";
 import { getMeTool } from "../tools/user.js";
 
 export const agent = new LlmAgent({
@@ -13,5 +14,5 @@ export const agent = new LlmAgent({
     "Se o usuário não estiver autenticado, avise que ele precisa fazer login. " +
     "Delegue tarefas de vendas ao agente de vendas. Responda sempre em português.",
   tools: [getMeTool],
-  subAgents: [salesAgent],
+  subAgents: [salesAgent, stockAgent],
 });

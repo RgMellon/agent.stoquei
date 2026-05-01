@@ -2,6 +2,7 @@ import { FunctionTool, Context } from "@google/adk";
 import { z } from "zod/v4";
 import { fetchSalesHistory, createSale } from "../client/sales/index.js";
 import { CONTEXT_KEY } from "../constants/contextKeys.js";
+import { getAuthContext } from "../helpers/getAuthContext.js";
 
 export const searchSalesTool = new FunctionTool({
   name: "search_sales",
@@ -35,29 +36,19 @@ export const searchSalesTool = new FunctionTool({
     }: { period: string; startDate?: string; endDate?: string },
     tool_context?: Context,
   ) => {
-    let storeId = tool_context?.state.get<string>(CONTEXT_KEY.USER_STORE_ID);
-
-    if (!storeId) {
-      return JSON.stringify({
-        error: "Nenhuma loja encontrada para este usuário.",
-      });
-    }
+    const auth = getAuthContext(tool_context);
+    if ("error" in auth) return JSON.stringify({ error: auth.error });
 
     try {
       const data = await fetchSalesHistory({
-        storeId,
+        token: auth.data.token,
+        storeId: auth.data.storeId,
         period,
         startDate,
         endDate,
       });
       return JSON.stringify(data);
     } catch (error: any) {
-      console.error("[search_sales] Erro:", {
-        status: error.response?.status,
-        data: error.response?.data,
-        message: error.message,
-        url: error.config?.url,
-      });
       const message = error.response?.data?.message ?? error.message;
       return JSON.stringify({ error: `Erro ao buscar vendas: ${message}` });
     }
@@ -112,17 +103,15 @@ export const createSaleTool = new FunctionTool({
       externalOrderId?: string;
       saleDate?: string;
     },
-    _tool_context?: Context,
+    tool_context?: Context,
   ) => {
+    const token = tool_context?.state.get<string>(CONTEXT_KEY.AUTH_TOKEN);
+    if (!token) return JSON.stringify({ error: "Usuário não autenticado." });
+
     try {
-      const data = await createSale(args);
+      const data = await createSale({ token, ...args });
       return JSON.stringify(data);
     } catch (error: any) {
-      console.error("[create_sale] Erro:", {
-        status: error.response?.status,
-        data: error.response?.data,
-        message: error.message,
-      });
       const message = error.response?.data?.message ?? error.message;
       return JSON.stringify({ error: `Erro ao registrar venda: ${message}` });
     }

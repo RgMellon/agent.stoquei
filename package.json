@@ -1,10 +1,11 @@
 {
   "name": "adk-stoquei",
   "version": "1.0.0",
-  "main": "src/agents/agent.ts",
+  "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "adk": "node --env-file=.env node_modules/.bin/adk web ./src/agents/agent.ts"
+    "start": "tsx src/index.ts",
+    "adk": "node --env-file=.env node_modules/.bin/adk web --port 4000 ./src/agents/agent.ts"
   },
   "keywords": [],
   "author": "",
@@ -12,14 +13,34 @@
   "description": "",
   "type": "module",
   "dependencies": {
+    "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.21.0",
+    "@google-cloud/opentelemetry-cloud-trace-exporter": "^3.0.0",
+    "@google-cloud/storage": "^7.19.0",
     "@google/adk": "^0.6.1",
+    "@mikro-orm/sqlite": "^7.0.13",
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/api-logs": "^0.216.0",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.216.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.216.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.216.0",
+    "@opentelemetry/resource-detector-gcp": "^0.51.0",
+    "@opentelemetry/resources": "^2.7.1",
+    "@opentelemetry/sdk-logs": "^0.216.0",
+    "@opentelemetry/sdk-metrics": "^2.7.1",
+    "@opentelemetry/sdk-trace-base": "^2.7.1",
+    "@opentelemetry/sdk-trace-node": "^2.7.1",
     "axios": "^1.15.1",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@google/adk-devtools": "^0.6.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   }
 }

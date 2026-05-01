@@ -1,6 +1,7 @@
-import { httpClient } from "../httpClient.js";
+import { httpClient, authHeaders } from "../httpClient.js";
 
 interface CreateSaleParams {
+  token: string;
   variantId: string;
   quantity: number;
   customSalePrice?: number;
@@ -11,7 +12,15 @@ interface CreateSaleParams {
 }
 
 // Registra uma nova venda para uma variante
-export const createSale = async ({ variantId, ...body }: CreateSaleParams) => {
-  const { data } = await httpClient.post(`/sales/variants/${variantId}`, body);
+export const createSale = async ({
+  token,
+  variantId,
+  ...body
+}: CreateSaleParams) => {
+  const { data } = await httpClient.post(
+    `/sales/variants/${variantId}`,
+    body,
+    authHeaders(token),
+  );
   return data;
 };

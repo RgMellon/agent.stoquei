@@ -7,9 +7,16 @@ export const getMeTool = new FunctionTool({
   description:
     "Valida a autenticação do usuário e recupera seus dados (nome, email, loja, plano). Deve ser chamada antes de qualquer ação que precise de dados da loja.",
   execute: async (_input: string, tool_context?: Context) => {
+    const token = tool_context?.state.get<string>(CONTEXT_KEY.AUTH_TOKEN);
+    if (!token) {
+      return JSON.stringify({
+        error: "Usuário não autenticado. Faça login para continuar.",
+      });
+    }
+
     try {
-      const data = await fetchMe();
-      console.log({ data }, "----");
+      const data = await fetchMe(token);
+
       if (tool_context) {
         tool_context.state.set(CONTEXT_KEY.USER_ME, data);
         tool_context.state.set(CONTEXT_KEY.USER_STORE_ID, data.stores?.[0]?.id);

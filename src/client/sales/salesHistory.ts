@@ -1,6 +1,7 @@
-import { httpClient } from "../httpClient.js";
+import { httpClient, authHeaders } from "../httpClient.js";
 
 interface SalesHistoryParams {
+  token: string;
   storeId: string;
   period: string;
   startDate?: string;
@@ -8,15 +9,20 @@ interface SalesHistoryParams {
 }
 
 // Busca o histórico de vendas da loja na API
-export const fetchSalesHistory = async (params: SalesHistoryParams) => {
+export const fetchSalesHistory = async ({
+  token,
+  storeId,
+  ...query
+}: SalesHistoryParams) => {
   const { data } = await httpClient.get(
-    `/sales/stores/${params.storeId}/history`,
+    `/sales/stores/${storeId}/history`,
     {
       params: {
-        period: params.period,
-        ...(params.startDate && { startDate: params.startDate }),
-        ...(params.endDate && { endDate: params.endDate }),
+        period: query.period,
+        ...(query.startDate && { startDate: query.startDate }),
+        ...(query.endDate && { endDate: query.endDate }),
       },
+      ...authHeaders(token),
     },
   );
   return data;
