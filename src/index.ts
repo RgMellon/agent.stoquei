@@ -71,15 +71,26 @@ app.post("/api/chat", async (req, res) => {
   });
 
   for await (const event of run) {
-    if (event.content?.parts?.length) {
-      const text = event.content.parts
-        .map((p) => p.text ?? "")
-        .filter(Boolean)
-        .join("");
+    console.log(`[EVENT] author=${event.author} role=${event.content?.role} transfer=${event.actions?.transferToAgent ?? "none"} parts=${JSON.stringify(event.content?.parts?.map((p) => ({ text: p.text?.substring(0, 80), fc: p.functionCall?.name, fr: p.functionResponse?.name })))}`);
 
-      if (text) {
-        res.write(`data: ${JSON.stringify({ text })}\n\n`);
-      }
+    // Ignora eventos que não são respostas do modelo
+    if (event.content?.role !== "model" || !event.content?.parts?.length) continue;
+
+    // Ignora eventos de transferência entre agentes
+    if (event.actions?.transferToAgent) continue;
+
+    // Ignora eventos que contêm function calls (tool calls internos)
+    const hasFunctionCall = event.content.parts.some((p) => p.functionCall);
+    if (hasFunctionCall) continue;
+
+    const text = event.content.parts
+      .map((p) => p.text ?? "")
+      .filter(Boolean)
+      .join("");
+
+    if (text) {
+      console.log(`[SSE] ✉️ ${event.author}: ${text.substring(0, 100)}`);
+      res.write(`data: ${JSON.stringify({ text })}\n\n`);
     }
   }
 

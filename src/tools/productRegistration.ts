@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import { FunctionTool, Context } from "@google/adk";
 import { z } from "zod/v4";
 import {
@@ -5,6 +6,9 @@ import {
   createVariants,
 } from "../client/products/index.js";
 import { getAuthContext } from "../helpers/getAuthContext.js";
+import { invalidateProductsCache } from "../helpers/productsCache.js";
+
+const generateSku = () => `SKU-${randomBytes(4).toString("hex").toUpperCase()}`;
 
 export const createProductTool = new FunctionTool({
   name: "create_product",
@@ -28,6 +32,7 @@ export const createProductTool = new FunctionTool({
         storeId: auth.data.storeId,
         ...args,
       });
+      invalidateProductsCache(tool_context);
       console.log("[create_product] ✅ Produto criado:", { id: data.id, name: args.name });
       return JSON.stringify(data);
     } catch (error: any) {
@@ -74,10 +79,17 @@ export const createVariantsTool = new FunctionTool({
     if ("error" in auth) return JSON.stringify({ error: auth.error });
 
     try {
+      const variants = args.variants.map((v) => ({
+        ...v,
+        sku: v.sku || generateSku(),
+      }));
+
       const data = await createVariants({
         token: auth.data.token,
-        ...args,
+        productId: args.productId,
+        variants,
       });
+      invalidateProductsCache(tool_context);
       console.log("[create_variants] ✅ Variantes criadas:", { productId: args.productId, count: args.variants.length });
       return JSON.stringify(data);
     } catch (error: any) {

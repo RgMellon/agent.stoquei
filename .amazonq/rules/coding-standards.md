@@ -54,3 +54,4 @@
 - Defina parameters com Zod schemas
 - Instruções dos agentes em português
 - Exporte agentes como named exports
+- A classe `State` do ADK só tem `get`, `set`, `has` — **não tem `delete`**
